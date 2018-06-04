@@ -1,5 +1,6 @@
 ---
 title: "Predict Customer Churn"
+Author : Mayur Garudi
 output: html_document
 ---
 
@@ -17,6 +18,7 @@ library(caret)
 library(MASS)
 library(randomForest)
 library(party)
+library(readr)
 ```
 
 
@@ -25,7 +27,7 @@ churn <- read.csv('Telco-Customer-Churn.csv')
 str(churn)
 ```
 
-The raw data contains 7043 rows (customers) and 21 columns (features). The “Churn” column is our target. We’ll use all other columns as features to our model.
+The raw data contains 7043 rows (customers) and 21 columns (features). The Churn column is our target. Well use all other columns as features to our model.
 
 We use sapply to check the number if missing values in each columns. We found that there are 11 missing values in "TotalCharges" columns. So, let's remove these rows with missing values.
 
@@ -37,7 +39,7 @@ sapply(churn, function(x) sum(is.na(x)))
 churn <- churn[complete.cases(churn), ]
 ```
 
-Change “No internet service” to “No” for six columns, they are: “OnlineSecurity”, “OnlineBackup”, “DeviceProtection”, “TechSupport”, “streamingTV”, “streamingMovies”.
+Change No internet service to No for six columns, they are: OnlineSecurity, OnlineBackup, DeviceProtection, TechSupport, streamingTV, streamingMovies.
 
 ```{r}
 cols_recode1 <- c(10:15)
@@ -47,7 +49,7 @@ for(i in 1:ncol(churn[,cols_recode1])) {
 }
 ```
 
-Change “No phone service” to “No” for column “MultipleLines”
+Change No phone service to No for column MultipleLines
 
 ```{r}
 churn$MultipleLines <- as.factor(mapvalues(churn$MultipleLines, 
@@ -55,7 +57,7 @@ churn$MultipleLines <- as.factor(mapvalues(churn$MultipleLines,
                                            to=c("No")))
 ```
 
-The minimum tenure is 1 month and maximum tenure is 72 months, we can group them into five tenure groups: “0–12 Month”, “12–24 Month”, “24–48 Months”, “48–60 Month”, “> 60 Month”.
+The minimum tenure is 1 month and maximum tenure is 72 months, we can group them into five tenure groups: 12 Month, 12-24 Month, 24-48 Months, 48-60 Month, > 60 Month.
 
 ```{r}
 min(churn$tenure); max(churn$tenure)
@@ -82,7 +84,7 @@ churn$tenure_group <- sapply(churn$tenure,group_tenure)
 churn$tenure_group <- as.factor(churn$tenure_group)
 ```
 
-Change the values in column “SeniorCitizen” from 0 or 1 to “No” or “Yes”.
+Change the values in column SeniorCitizen from 0 or 1 to No or Yes.
 
 ```{r}
 churn$SeniorCitizen <- as.factor(mapvalues(churn$SeniorCitizen,
